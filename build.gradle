@@ -70,8 +70,8 @@ artifactory {
     publish {
         repository {
             repoKey = "plugins-release-local"
-            username = project.artifactory_user
-            password = project.artifactory_password
+            username = project.hasProperty("artifactory_user")?project.artifactory_user:""
+            password = project.hasProperty("artifactory_password")?project.artifactory_password:""
             maven = true
         }
         defaults {

@@ -1,66 +1,48 @@
-Gradle Plugin Template [![Build Status](https://travis-ci.org/int128/gradle-plugin-starter.svg?branch=master)](https://travis-ci.org/int128/gradle-plugin-starter) [![Gradle Status](https://gradleupdate.appspot.com/int128/gradle-plugin-starter/status.svg?branch=master)](https://gradleupdate.appspot.com/int128/gradle-plugin-starter/status)
-======================
+Gradle Git Extractor Plugin [![Build Status](https://travis-ci.org/bastienpaulfr/gradle-git-extractor-plugin.svg?branch=master)](https://travis-ci.org/bastienpaulfr/gradle-git-extractor-plugin) [![Gradle Status](https://gradleupdate.appspot.com/int128/gradle-git-extractor-plugin/status.svg?branch=master)](https://gradleupdate.appspot.com/int128/gradle-git-extractor-plugin/status)
+============================
 
-This is a template project of Gradle plugin with blank implementation.
-
+This plugin for gradle is simply adding a task to extract files from a git repository
 
 Features
 --------
 
 This contains following features:
 
-  * Blank implementation of the plugin (see [HelloPlugin.groovy](src/main/groovy/com/example/HelloPlugin.groovy))
-  * Testing with Spock (see [HelloPluginSpec.groovy](src/test/groovy/com/example/HelloPluginSpec.groovy))
-  * Acceptance Test using Gradle TestKit
-  * Continuous Integration and Delivery on Travis CI
-  * Publishing the plugin on [Gradle Plugins](http://plugins.gradle.org)
-  * Gradle Wrapper
-  * `.gitignore` for Gradle, IDEA and Eclipse
+  * Task `ExtractSourcesFromGitInternalTask`
 
+This task is doing more or less the same than : `git checkout-index -a -f --prefix=$prefix`
 
 Getting Started
 ---------------
 
-Create your account on [Gradle Plugins](http://plugins.gradle.org/submit) and get the API key.
+**build.gradle**
 
-```properties
-# ~/.gradle/gradle.properties
-gradle.publish.key=xxx
-gradle.publish.secret=
+```
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'fr.coppernic.gradle.plugin:git-extractor:0.0.2'
+    }
+}
+
+
+import fr.coppernic.gradle.git.extractor.tasks.ExtractSourcesFromGitInternalTask
+
+
+task extractSourcesFromGit(type: ExtractSourcesFromGitInternalTask) {
+    gitDir = project.projectDir
+    outputDir = new File(project.buildDir, "sources/git")
+}
+
 ```
 
-This repository contains the example implementation.
-Change files to your Group ID and Plugin ID.
+Then run task
 
-Identifier  | In this repository    | To be changed
-------------|-----------------------|--------------
-Group ID    | `com.example`         | Package name of production and test code, `group` in the build script
-Plugin ID   | `com.example.hello`   | Class name of production and test code, the plugin descriptor in resources, `id` in the build script
-
-Build the plugin.
-
-```sh
-./gradlew build
 ```
-
-Publish the plugin.
-
-```sh
-TRAVIS_TAG=0.1.0 ./gradlew publishPlugins
+./gradlew extractSourcesFromGit
 ```
-
-
-Working with Travis CI
-----------------------
-
-Travis CI builds the plugin continuously.
-It also publishes the plugin if a tag is pushed and following variables are set.
-
-Environment Variable        | Value
-----------------------------|------
-`$GRADLE_PUBLISH_KEY`       | `gradle.publish.key` of the API key
-`$GRADLE_PUBLISH_SECRET`    | `gradle.publish.secret` of the API key
-
 
 Contributions
 -------------
