@@ -30,20 +30,16 @@ public class ExtractSourcesFromGitInternalTask extends DefaultTask {
 
     @TaskAction
     public void action() {
-
         if(gitDir == null){
             gitDir = project.projectDir
         }
 
-        //def process = ["git", "checkout-index", "-a", "-f", "--prefix=$outputDir/"].execute()
-        //process.waitFor()
         if(executeOnShell("git checkout-index -a -f --prefix=$outputDir/", gitDir)){
-            //throw new GradleException("Git checkout index failed : ${process.exitValue()}, ${process.text}")
             throw new GradleException("Git checkout index failed")
         }
     }
 
-    private def executeOnShell(String command, File workingDir) {
+    private static def executeOnShell(String command, File workingDir) {
         println command
         def process = new ProcessBuilder(addShellPrefix(command))
                 .directory(workingDir)
@@ -56,7 +52,7 @@ public class ExtractSourcesFromGitInternalTask extends DefaultTask {
         return process.exitValue()
     }
 
-    private def addShellPrefix(String command) {
+    private static def addShellPrefix(String command) {
         def commandArray = new String[3]
         commandArray[0] = "sh"
         commandArray[1] = "-c"

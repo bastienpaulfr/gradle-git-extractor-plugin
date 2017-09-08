@@ -42,6 +42,9 @@ class AcceptanceSpec extends Specification {
         noExceptionThrown()
         println result.output
         result.task(":extract").outcome == SUCCESS
+        assert new File(runner.projectDir, "build/coppernic/test/acceptance-test/fixture/build.gradle").exists()
+        assert new File(runner.projectDir, "build/coppernic/test/acceptance-test/fixture/filetoignore.txt").exists()
+        assert new File(runner.projectDir, "build/coppernic/test/acceptance-test/fixture/filetoinclude.txt").exists()
 
         where:
         gradleVersion << [System.getProperty('current.gradle.version'), '3.5']
@@ -62,6 +65,9 @@ class AcceptanceSpec extends Specification {
         noExceptionThrown()
         println result.output
         result.task(":copy").outcome == SUCCESS
+        assert new File(runner.projectDir, "build/coppernic/sources/filtered/acceptance-test/fixture/build.gradle").exists()
+        assert !new File(runner.projectDir, "build/coppernic/sources/filtered/acceptance-test/fixture/filetoignore.txt").exists()
+        assert new File(runner.projectDir, "build/coppernic/sources/filtered/acceptance-test/fixture/filetoinclude.txt").exists()
 
         where:
         gradleVersion << [System.getProperty('current.gradle.version'), '3.5']
