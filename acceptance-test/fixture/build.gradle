@@ -1,7 +1,31 @@
+import fr.coppernic.gradle.git.extractor.tasks.ExtractSourcesFromGitInternalTask
+
 plugins {
-    id 'com.example.hello'
+    id 'fr.coppernic.git.extractor'
 }
 
-task test << {
-    assert project.plugins.hasPlugin('com.example.hello')
+task test() {
+    doLast {
+        assert project.plugins.hasPlugin('fr.coppernic.git.extractor')
+    }
+}
+
+task extract(type: ExtractSourcesFromGitInternalTask) {
+    gitDir = project.projectDir
+    outputDir = new File(project.buildDir, "coppernic/test/")
+}
+
+task copy(type: Sync){
+    from extract
+    into("${project.buildDir}/coppernic/sources/filtered/")
+
+    exclude "**/fdroid.properties"
+    exclude "**/fabric.properties"
+    exclude "**/filetoignore.txt"
+}
+
+task clean {
+    doLast {
+        project.buildDir.deleteDir()
+    }
 }

@@ -2,6 +2,8 @@ import org.gradle.testkit.runner.GradleRunner
 import spock.lang.Specification
 import spock.lang.Unroll
 
+import static org.gradle.testkit.runner.TaskOutcome.SUCCESS
+
 class AcceptanceSpec extends Specification {
 
     @Unroll
@@ -14,13 +16,55 @@ class AcceptanceSpec extends Specification {
             .withGradleVersion(gradleVersion)
 
         when:
-        runner.build()
+        def result = runner.build()
 
         then:
         noExceptionThrown()
+        result.task(":test").outcome == SUCCESS
 
         where:
-        gradleVersion << [System.getProperty('current.gradle.version'), '2.13']
+        gradleVersion << [System.getProperty('current.gradle.version'), '3.5']
+    }
+
+
+    def 'extract tasks'() {
+        given:
+        def runner = GradleRunner.create()
+                .withProjectDir(new File('fixture'))
+                .withArguments('clean','extract', '--stacktrace')
+                .withPluginClasspath()
+                .withGradleVersion(gradleVersion)
+
+        when:
+        def result = runner.build()
+
+        then:
+        noExceptionThrown()
+        println result.output
+        result.task(":extract").outcome == SUCCESS
+
+        where:
+        gradleVersion << [System.getProperty('current.gradle.version'), '3.5']
+    }
+
+    def 'copy extracted files'() {
+        given:
+        def runner = GradleRunner.create()
+                .withProjectDir(new File('fixture'))
+                .withArguments('clean','copy', '--stacktrace')
+                .withPluginClasspath()
+                .withGradleVersion(gradleVersion)
+
+        when:
+        def result = runner.build()
+
+        then:
+        noExceptionThrown()
+        println result.output
+        result.task(":copy").outcome == SUCCESS
+
+        where:
+        gradleVersion << [System.getProperty('current.gradle.version'), '3.5']
     }
 
 }

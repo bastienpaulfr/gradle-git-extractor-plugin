@@ -1,10 +1,22 @@
-plugins {
-    id 'groovy'
-    id 'com.gradle.plugin-publish' version '0.9.6'
+buildscript {
+    repositories {
+        maven { url 'http://arti-01:8081/artifactory/plugins-release' }
+    }
+    dependencies {
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.0.0"
+    }
 }
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
+plugins {
+    id 'groovy'
+    id 'com.gradle.plugin-publish' version '0.9.7'
+}
+
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.artifactory'
+
+sourceCompatibility = JavaVersion.VERSION_1_7
+targetCompatibility = JavaVersion.VERSION_1_7
 
 repositories {
     jcenter()
@@ -19,19 +31,56 @@ dependencies {
     testCompile 'cglib:cglib-nodep:3.1'
 }
 
-group = 'com.example'
+group = 'fr.coppernic.gradle.plugin'
 version = System.getenv('TRAVIS_TAG') ?: 'SNAPSHOT'
 
 pluginBundle {
-    website = 'https://github.com/int128/gradle-plugin-starter'
-    vcsUrl = 'https://github.com/int128/gradle-plugin-starter'
-    description = 'Hello World Plugin'
-    tags = ['example']
+    website = 'https://github.com/bastienpaulfr/gradle-git-extractor-plugin'
+    vcsUrl = 'https://github.com/bastienpaulfr/gradle-git-extractor-plugin'
+    description = 'Git extractor plugin'
+    tags = ['git','extractor','plugin']
 
     plugins {
-        helloPlugin {
-            id = 'com.example.hello'
-            displayName = 'Hello World Plugin'
+        gitExtractorPlugin {
+            id = 'fr.coppernic.git.extractor'
+            displayName = 'Git Extractor Plugin'
         }
     }
 }
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+publishing {
+    publications {
+        art(MavenPublication) {
+            groupId = project.group
+            version = project.version
+            artifactId = "git-extractor"
+
+            artifact jar
+        }
+    }
+}
+
+artifactory {
+    contextUrl = "http://arti-01:8081/artifactory"
+    publish {
+        repository {
+            repoKey = "plugins-release-local"
+            username = project.artifactory_user
+            password = project.artifactory_password
+            maven = true
+        }
+        defaults {
+            publications('art')
+            publishArtifacts = true
+            publishPom = true
+            publishBuildInfo = false
+        }
+    }
+}
+
+project.artifactoryPublish.dependsOn(['build'])
