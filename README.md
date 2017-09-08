@@ -19,14 +19,15 @@ Getting Started
 
 ```
 buildscript {
-    repositories {
-        mavenCentral()
+  repositories {
+    maven {
+      url "https://plugins.gradle.org/m2/"
     }
-    dependencies {
-        classpath 'fr.coppernic.gradle.plugin:git-extractor:0.0.2'
-    }
+  }
+  dependencies {
+    classpath "gradle.plugin.fr.coppernic.gradle.plugin:gradle-git-extractor-plugin:0.0.2"
+  }
 }
-
 
 import fr.coppernic.gradle.git.extractor.tasks.ExtractSourcesFromGitInternalTask
 
